@@ -1,6 +1,25 @@
 #!/usr/bin/env node
 import inquirer from 'inquirer';
 import axios from 'axios';
+import chalk from 'chalk';
+// Map weather main to emoji/icon
+const weatherIcons = {
+  Clear: '☀️',
+  Clouds: '☁️',
+  Rain: '🌧️',
+  Drizzle: '🌦️',
+  Thunderstorm: '⛈️',
+  Snow: '❄️',
+  Mist: '🌫️',
+  Smoke: '💨',
+  Haze: '🌫️',
+  Dust: '🌪️',
+  Fog: '🌫️',
+  Sand: '🏜️',
+  Ash: '🌋',
+  Squall: '🌬️',
+  Tornado: '🌪️',
+};
 
 async function getWeather(city, apiKey) {
   if (!apiKey) {
@@ -42,13 +61,14 @@ async function main() {
   try {
     const weather = await getWeather(city, apiKey);
     if (!apiKey) {
-      console.log('\n[Demo Mode] No API key set. Showing mock weather data.');
+      console.log(chalk.yellow('\n[Demo Mode] No API key set. Showing mock weather data.'));
     }
-    console.log(`\nWeather for ${weather.name}, ${weather.sys.country}:`);
-    console.log(`  ${weather.weather[0].main} - ${weather.weather[0].description}`);
-    console.log(`  Temperature: ${weather.main.temp}°C (feels like ${weather.main.feels_like}°C)`);
-    console.log(`  Humidity: ${weather.main.humidity}%`);
-    console.log(`  Wind: ${weather.wind.speed} m/s`);
+    const icon = weatherIcons[weather.weather[0].main] || '';
+    console.log(chalk.bold(`\nWeather for ${weather.name}, ${weather.sys.country}:`));
+    console.log(`  ${icon}  ${chalk.cyan(weather.weather[0].main)} - ${chalk.gray(weather.weather[0].description)}`);
+    console.log(`  🌡️  Temperature: ${chalk.red(weather.main.temp + '°C')} (feels like ${chalk.red(weather.main.feels_like + '°C')})`);
+    console.log(`  💧 Humidity: ${chalk.blue(weather.main.humidity + '%')}`);
+    console.log(`  💨 Wind: ${chalk.green(weather.wind.speed + ' m/s')}`);
   } catch (err) {
     console.error('Error:', err.message);
   }
